@@ -1,88 +1,134 @@
 'use client';
 // pages/dashboard.tsx
 
+// use client
+
 import React, { useState, useEffect } from 'react';
-import mongoose from 'mongoose';
 
-// MongoDB connection
-const MONGODB_URI = 'your_mongodb_uri';
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+interface User {
+  id: string;
+  name: string;
+  address: string;
+  email: string;
+  orders: Array<{
+    address: string;
+    contents: string;
+    orderCreated: Date;
+  }>;
 }
 
-let cachedDb = null;
-
-async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
-  const client = await mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-  const db = client.connection.db;
-  cachedDb = db;
-
-  return db;
-}
-
-// User model
-const userSchema = new mongoose.Schema({
-  name: String,
-  address: String,
-  email: String,
-  orders: [
-    {
-      address: String,
-      contents: String,
-      orderCreated: { type: Date, default: Date.now },
-    },
-  ],
-});
-
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
-// API route to fetch user data
-export default async function handler(req, res) {
-  try {
-    const db = await connectToDatabase();
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-}
-
-// Dashboard page
+// Dashboard component
 const Dashboard: React.FC = () => {
-  const [users, setUsers] = useState([]);
+  const [isLoggedIn, setLoggedIn] = useState(false); // Dummy state for login status
+  const [users, setUsers] = useState<User[]>([]); // State for user list
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserAddress, setNewUserAddress] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/users');
-      const data = await response.json();
-      setUsers(data);
+    // Simulate user being logged in
+    setLoggedIn(true);
+
+    // Fetch user data from the API
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/users');
+        const data: User[] = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
     };
 
-    fetchData();
+    // Fetch user data
+    fetchUserData();
   }, []);
 
+  const handleCreateUser = async () => {
+    try {
+      const response = await fetch('/api/createUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newUserName,
+          address: newUserAddress,
+          email: newUserEmail,
+        }),
+      });
+
+      if (response.ok) {
+        const createdUser: User = await response.json();
+        setUsers((prevUsers) => [...prevUsers, createdUser]);
+        setNewUserName('');
+        setNewUserAddress('');
+        setNewUserEmail('');
+        setSuccessMessage('User added successfully!');
+      } else {
+        console.error('Error creating user:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+  };
+
   return (
-    <div>
-      <h1>User Dashboard</h1>
-      <ul>
-        {users.map((user) => (
-          <li key={user._id}>
-            <p>Name: {user.name}</p>
-            <p>Email: {user.email}</p>
-            <p>Address: {user.address}</p>
-          </li>
-        ))}
-      </ul>
-      <button>Create New User</button>
+    <div style={{ background: 'black', color: 'white' }} className="flex flex-col h-screen p-4">
+      {/* User List */}
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold">Users</h2>
+        <ul>
+          {users.length === 0 ? (
+            <p>Loading...</p>
+          ) : (
+            users.map((user) => (
+              <li key={user.id} className="mb-2">
+                {user.name}
+              </li>
+            ))
+          )}
+        </ul>
+        <button className="mt-2 bg-gray-500 text-white p-2 rounded" onClick={() => alert('Create new user')}>
+          New User
+        </button>
+      </div>
+
+      {/* Create User Form */}
+      <div>
+        <h2 className="text-lg font-semibold mb-2">Create New User</h2>
+        <div className="flex flex-col">
+          <input
+            type="text"
+            placeholder="Name"
+            value={newUserName}
+            onChange={(e) => setNewUserName(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            value={newUserAddress}
+            onChange={(e) => setNewUserAddress(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <input
+            type="text"
+            placeholder="Email"
+            value={newUserEmail}
+            onChange={(e) => setNewUserEmail(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateUser}>
+            Create User
+          </button>
+        </div>
+        {successMessage && <p className="text-green-500 mt-2">{successMessage}</p>}
+      </div>
     </div>
   );
 };
 
 export default Dashboard;
+
