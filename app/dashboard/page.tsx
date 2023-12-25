@@ -6,29 +6,22 @@
 import React, { useState, useEffect } from 'react';
 
 interface User {
-  id: string;
   name: string;
   address: string;
   email: string;
-  orders: Array<{
-    address: string;
-    contents: string;
-    orderCreated: Date;
-  }>;
 }
 
 // Dashboard component
 const Dashboard: React.FC = () => {
-  const [isLoggedIn, setLoggedIn] = useState(false); // Dummy state for login status
+  const [showUserInputs, setShowUserInputs] = useState(false);
   const [users, setUsers] = useState<User[]>([]); // State for user list
-  const [newUserName, setNewUserName] = useState('');
-  const [newUserAddress, setNewUserAddress] = useState('');
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  var [newUserName, setNewUserName] = useState('');
+  var [newUserAddress, setNewUserAddress] = useState('');
+  var [newUserEmail, setNewUserEmail] = useState('');
+  var [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     // Simulate user being logged in
-    setLoggedIn(true);
 
     // Fetch user data from the API
     const fetchUserData = async () => {
@@ -47,6 +40,8 @@ const Dashboard: React.FC = () => {
 
   const handleCreateUser = async () => {
     try {
+      setShowUserInputs(true); // Show user inputs when creating a new user
+
       const response = await fetch('/api/createUser', {
         method: 'POST',
         headers: {
@@ -61,7 +56,7 @@ const Dashboard: React.FC = () => {
 
       if (response.ok) {
         const createdUser: User = await response.json();
-        setUsers((prevUsers) => [...prevUsers, createdUser]);
+        setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
         setNewUserName('');
         setNewUserAddress('');
         setNewUserEmail('');
@@ -76,29 +71,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ background: 'black', color: 'white' }} className="flex flex-col h-screen p-4">
-      {/* User List */}
+      {/* Create User Form */}
       <div className="mb-4">
-        <h2 className="text-lg font-semibold">Users</h2>
-        <ul>
-          {users.length === 0 ? (
-            <p>Loading...</p>
-          ) : (
-            users.map((user) => (
-              <li key={user.id} className="mb-2">
-                {user.name}
-              </li>
-            ))
-          )}
-        </ul>
-        <button className="mt-2 bg-gray-500 text-white p-2 rounded" onClick={() => alert('Create new user')}>
+        <h2 className="text-lg font-semibold mb-2">Create New User</h2>
+        <button
+          className="bg-gray-500 text-white p-2 rounded"
+          onClick={() => setShowUserInputs(!showUserInputs)}
+        >
           New User
         </button>
-      </div>
-
-      {/* Create User Form */}
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Create New User</h2>
-        <div className="flex flex-col">
+        <div className={`flex flex-col ${showUserInputs ? '' : 'hidden'}`}>
           <input
             type="text"
             placeholder="Name"
@@ -123,12 +105,17 @@ const Dashboard: React.FC = () => {
           <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateUser}>
             Create User
           </button>
+          {successMessage && <p className="text-green-500 mt-2">{successMessage}</p>}
         </div>
-        {successMessage && <p className="text-green-500 mt-2">{successMessage}</p>}
+      </div>
+
+      {/* User List */}
+      <div>
+        <h2 className="text-lg font-semibold">Users</h2>
+
       </div>
     </div>
   );
 };
 
 export default Dashboard;
-
