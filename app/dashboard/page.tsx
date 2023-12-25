@@ -15,10 +15,10 @@ interface User {
 const Dashboard: React.FC = () => {
   const [showUserInputs, setShowUserInputs] = useState(false);
   const [users, setUsers] = useState<User[]>([]); // State for user list
-  var [newUserName, setNewUserName] = useState('');
-  var [newUserAddress, setNewUserAddress] = useState('');
-  var [newUserEmail, setNewUserEmail] = useState('');
-  var [successMessage, setSuccessMessage] = useState('');
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserAddress, setNewUserAddress] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     // Simulate user being logged in
@@ -41,17 +41,15 @@ const Dashboard: React.FC = () => {
   const handleCreateUser = async () => {
     try {
       setShowUserInputs(true); // Show user inputs when creating a new user
-
+console.log(newUserName)
+      const body = JSON.stringify({name: newUserName,address: newUserAddress,email: newUserEmail,})
+      console.log(body)
       const response = await fetch('/api/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: newUserName,
-          address: newUserAddress,
-          email: newUserEmail,
-        }),
+        body: body,
       });
 
       if (response.ok) {

@@ -1,6 +1,6 @@
 export async function POST(req) {
-  const { name, email, address } = req.body;
   const body = req.body
+  const { name, email, address } = JSON.stringify(body);
   console.log(JSON.stringify({body}))
     const res = await fetch('https://data.mongodb-api.com/app/data-kyrmw/endpoint/data/v1/action/insertOne', {
       method: 'POST',
