@@ -1,12 +1,18 @@
 export async function POST(req) {
-  const body = req.body
-  const { name, email, address } = JSON.stringify(body);
-  console.log(JSON.stringify({body}))
+
+  try {
+    const body = await req.json();
+    console.log(body);
+    const { name, email, address } = body;
+
+    // Log the received data
+    console.log('Received data:', { name, email, address });
+
     const res = await fetch('https://data.mongodb-api.com/app/data-kyrmw/endpoint/data/v1/action/insertOne', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Request-Headers': '*',
+//        'Access-Control-Request-Headers': '*',
         'api-key': process.env.MONGODB_APIKEY,
       },
       body: JSON.stringify({
@@ -24,6 +30,9 @@ export async function POST(req) {
 
    
     const data = await res.json()
-   console.log(data)
+    console.log(data)
     return Response.json(data)
+  } catch (error) {
+    console.error(error)
   }
+}

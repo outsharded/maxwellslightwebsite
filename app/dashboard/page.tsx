@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
   const handleCreateUser = async () => {
     try {
       setShowUserInputs(true); // Show er inputs when creating a new user
-      const body = JSON.stringify({name: newUserName, address: newUserAddress, email: newUserEmail,})
+      const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail,})
       const response = await fetch('/api/createUser', {
         method: 'POST',
         headers: {
