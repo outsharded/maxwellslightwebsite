@@ -10,7 +10,7 @@ export async function GET() {
       "collection": "users",
       "database": "maxwellslight",
       "dataSource": "MaxwellSlight",
-      "filter": {}
+      "filter": {  "_id": { "$exists": true }}
     }),
   })
 

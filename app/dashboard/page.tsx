@@ -1,14 +1,12 @@
 'use client';
-// pages/dashboard.tsx
-
-// use client
-
 import React, { useState, useEffect } from 'react';
 
 interface User {
+  _id: string;
   name: string;
   address: string;
   email: string;
+  orders: any;
 }
 
 // Dashboard component
@@ -19,28 +17,36 @@ const Dashboard: React.FC = () => {
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [newOrderAddress, setNewOrderAddress] = useState('');
+  const [newOrderContents, setNewOrderContents] = useState('');
+
 
   useEffect(() => {
     // Simulate user being logged in
-
+  
     // Fetch user data from the API
     const fetchUserData = async () => {
       try {
         const response = await fetch('/api/users');
-        const data: User[] = await response.json();
-        setUsers(data);
+        const responseData = await response.json();
+  
+        // Assuming responseData is the entire response
+        const userData = responseData?.product?.documents || [];
+  
+        setUsers(userData);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-
+  
     // Fetch user data
     fetchUserData();
   }, []);
 
   const handleCreateUser = async () => {
     try {
-      setShowUserInputs(true); // Show er inputs when creating a new user
+      setShowUserInputs(true); // Show inputs when creating a new user
       const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail,})
       const response = await fetch('/api/createUser', {
         method: 'POST',
@@ -65,17 +71,43 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleCreateOrder = async () => {
+    try {
+      // Check if a user is selected
+      if (!selectedUserId) {
+        console.error('No user selected');
+        return;
+      }
+  
+      const body = JSON.stringify({
+        _id: selectedUserId,
+        address: newOrderAddress,
+        contents: newOrderContents,
+      });
+  
+      const response = await fetch(`/api/createOrder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+  
+      if (response.ok) {
+        // You may want to update the user's orders in the state if needed
+        setSuccessMessage('Order created successfully!');
+      } else {
+        console.error('Error creating order:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+    }
+  };
   return (
     <div style={{ background: 'black', color: 'white' }} className="flex flex-col h-screen p-4">
       {/* Create User Form */}
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Create New User</h2>
-        <button
-          className="bg-gray-500 text-white p-2 rounded"
-          onClick={() => setShowUserInputs(!showUserInputs)}
-        >
-          New User
-        </button>
         <div className={`flex flex-col ${showUserInputs ? '' : 'hidden'}`}>
           <input
             type="text"
@@ -104,14 +136,78 @@ const Dashboard: React.FC = () => {
           {successMessage && <p className="text-green-500 mt-2">{successMessage}</p>}
         </div>
       </div>
-
-      {/* User List */}
-      <div>
-        <h2 className="text-lg font-semibold">Users</h2>
-
+  
+      {/* New Order Input Fields */}
+      {selectedUserId && (
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Order Address"
+            value={newOrderAddress}
+            onChange={(e) => setNewOrderAddress(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <input
+            type="text"
+            placeholder="Order Contents"
+            value={newOrderContents}
+            onChange={(e) => setNewOrderContents(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateOrder}>
+            Create Order
+          </button>
+        </div>
+      )}
+  
+      <div className="flex items-start">
+        {/* Left Side */}
+        <ul className="flex-1 border-r border-gray-400 pr-2">
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <li
+                key={user._id}
+                className={`p-2 ${index % 2 === 0 ? 'bg-gray-400' : ''}`}
+                onClick={() => setSelectedUserId(user._id)}
+              >
+                <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
+              </li>
+            ))
+          ) : (
+            <p>No users available</p>
+          )}
+        </ul>
+  
+        {/* Divider Line with Spacing */}
+        <div className="w-2 border-r border-gray-400 mx-2"></div>
+  
+        {/* Right Side */}
+        <ul className="flex-1 border-gray-400 text-right pl-2">
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <li
+                key={user._id}
+                className={`p-2 ${index % 2 === 0 ? 'bg-gray-400' : ''}`}
+              >
+                <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Address:</strong> {user.address}
+              </li>
+            ))
+          ) : (
+            <p>No users available</p>
+          )}
+        </ul>
       </div>
+  
+      {/* Display selected user ID */}
+      {selectedUserId && (
+        <div className="mt-4">
+          <p>Selected User ID: {selectedUserId}</p>
+        </div>
+      )}
     </div>
   );
+  
+  
 };
 
 export default Dashboard;
