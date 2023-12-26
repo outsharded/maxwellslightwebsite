@@ -12,6 +12,7 @@ interface User {
 // Dashboard component
 const Dashboard: React.FC = () => {
   const [showUserInputs, setShowUserInputs] = useState(false);
+  const [showOrderInputs, setShowOrderInputs] = useState(false);
   const [users, setUsers] = useState<User[]>([]); // State for user list
   const [newUserName, setNewUserName] = useState('');
   const [newUserAddress, setNewUserAddress] = useState('');
@@ -108,6 +109,12 @@ const Dashboard: React.FC = () => {
       {/* Create User Form */}
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Create New User</h2>
+        <button
+          className="bg-gray-500 text-white p-2 rounded"
+          onClick={() => setShowUserInputs(!showUserInputs)}
+        >
+          New User
+        </button>
         <div className={`flex flex-col ${showUserInputs ? '' : 'hidden'}`}>
           <input
             type="text"
@@ -140,23 +147,31 @@ const Dashboard: React.FC = () => {
       {/* New Order Input Fields */}
       {selectedUserId && (
         <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Order Address"
-            value={newOrderAddress}
-            onChange={(e) => setNewOrderAddress(e.target.value)}
-            className="mb-2 p-2 border border-gray-400 rounded text-black"
-          />
-          <input
-            type="text"
-            placeholder="Order Contents"
-            value={newOrderContents}
-            onChange={(e) => setNewOrderContents(e.target.value)}
-            className="mb-2 p-2 border border-gray-400 rounded text-black"
-          />
-          <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateOrder}>
-            Create Order
+          <button
+            className="bg-gray-500 text-white p-2 rounded"
+            onClick={() => setShowOrderInputs(!showOrderInputs)}
+          >
+            New Order
           </button>
+          <div className={`flex flex-col ${showOrderInputs ? '' : 'hidden'}`}>
+            <input
+              type="text"
+              placeholder="Order Address"
+              value={newOrderAddress}
+              onChange={(e) => setNewOrderAddress(e.target.value)}
+              className="mb-2 p-2 border border-gray-400 rounded text-black"
+            />
+            <input
+              type="text"
+              placeholder="Order Contents"
+              value={newOrderContents}
+              onChange={(e) => setNewOrderContents(e.target.value)}
+              className="mb-2 p-2 border border-gray-400 rounded text-black"
+            />
+            <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateOrder}>
+              Create Order
+            </button>
+          </div>
         </div>
       )}
   
