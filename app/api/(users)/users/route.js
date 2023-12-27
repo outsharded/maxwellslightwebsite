@@ -5,6 +5,7 @@ export async function GET() {
       'Content-Type': 'application/json',
 //      Access-Control-Request-Headers': '*',
       'api-key': process.env.MONGODB_APIKEY,
+      'Cache-Control': 'no-store, max-age=0',
     },
     body: JSON.stringify({
       "collection": "users",
@@ -12,7 +13,7 @@ export async function GET() {
       "dataSource": "MaxwellSlight",
       "filter": {  "_id": { "$exists": true }}
     }),
-  })
+  }, {next: { revalidate: 1 }})
 
   const product = await res.json()
   return Response.json({ product })

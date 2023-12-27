@@ -19,14 +19,14 @@ export async function POST(req) {
           "collection": "users",
           "database": "maxwellslight",
           "dataSource": "MaxwellSlight",
-          "filter": {"_id":`ObjectID('${_id}')`},
-            "update":{
-                "addToSet": {
-                    orders: {"address": address, "contents": contents, "otrderCreated": Date.now}
-                }
+          "filter": {"_id":{"$oid":`${_id}`}},
+          "update": {
+            "$push": {
+              orders: { address, contents, orderCreated: Date.now() }
             }
+          }
       })
-    })
+    }, {next: { revalidate: 1 }})
   
      
       const data = await res.json()

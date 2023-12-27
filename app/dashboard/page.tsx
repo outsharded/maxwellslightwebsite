@@ -1,14 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 
+interface Order {
+  address: string;
+  contents: string;
+  orderCreated: Date;
+}
+
 interface User {
   _id: string;
   name: string;
   address: string;
   email: string;
-  orders: any;
+  orders: Order[];
 }
-
 // Dashboard component
 const Dashboard: React.FC = () => {
   const [showUserInputs, setShowUserInputs] = useState(false);
@@ -18,9 +23,10 @@ const Dashboard: React.FC = () => {
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState('');
   const [newOrderAddress, setNewOrderAddress] = useState('');
   const [newOrderContents, setNewOrderContents] = useState('');
+  const [newOrderId, setNewOrderId] = useState('');
 
 
   useEffect(() => {
@@ -109,12 +115,23 @@ const Dashboard: React.FC = () => {
       {/* Create User Form */}
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Create New User</h2>
-        <button
-          className="bg-gray-500 text-white p-2 rounded"
-          onClick={() => setShowUserInputs(!showUserInputs)}
-        >
-          New User
-        </button>
+        <div className="flex items-center">
+    <button
+      className="bg-gray-500 text-white p-2 rounded"
+      onClick={() => setShowUserInputs(!showUserInputs)}
+    >
+      New User
+    </button>
+
+      <button
+        className="bg-gray-500 text-white p-2 rounded ml-2"
+        onClick={() => setShowOrderInputs(!showOrderInputs)}
+      >
+        New Order
+      </button>
+    
+  </div>
+
         <div className={`flex flex-col ${showUserInputs ? '' : 'hidden'}`}>
           <input
             type="text"
@@ -145,35 +162,36 @@ const Dashboard: React.FC = () => {
       </div>
   
       {/* New Order Input Fields */}
-      {selectedUserId && (
-        <div className="mb-4">
-          <button
-            className="bg-gray-500 text-white p-2 rounded"
-            onClick={() => setShowOrderInputs(!showOrderInputs)}
-          >
-            New Order
-          </button>
-          <div className={`flex flex-col ${showOrderInputs ? '' : 'hidden'}`}>
-            <input
-              type="text"
-              placeholder="Order Address"
-              value={newOrderAddress}
-              onChange={(e) => setNewOrderAddress(e.target.value)}
-              className="mb-2 p-2 border border-gray-400 rounded text-black"
-            />
-            <input
-              type="text"
-              placeholder="Order Contents"
-              value={newOrderContents}
-              onChange={(e) => setNewOrderContents(e.target.value)}
-              className="mb-2 p-2 border border-gray-400 rounded text-black"
-            />
-            <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateOrder}>
-              Create Order
-            </button>
-          </div>
-        </div>
-      )}
+      <div className="mb-4">
+
+  <div className={`flex flex-col ${showOrderInputs ? '' : 'hidden'}`}>
+    <input
+      type="text"
+      placeholder="Order Address"
+      value={newOrderAddress}
+      onChange={(e) => setNewOrderAddress(e.target.value)}
+      className="mb-2 p-2 border border-gray-400 rounded text-black"
+    />
+    <input
+      type="text"
+      placeholder="Order Contents"
+      value={newOrderContents}
+      onChange={(e) => setNewOrderContents(e.target.value)}
+      className="mb-2 p-2 border border-gray-400 rounded text-black"
+    />
+    <input
+      type="text"
+      placeholder="User's ID"
+      value={newOrderId || selectedUserId}
+      onChange={(e) => setNewOrderId(e.target.value)}
+      className="mb-2 p-2 border border-gray-400 rounded text-black"
+    />
+    <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateOrder}>
+      Create Order
+    </button>
+  </div>
+</div>
+
   
       <div className="flex items-start">
         {/* Left Side */}
@@ -182,7 +200,7 @@ const Dashboard: React.FC = () => {
             users.map((user, index) => (
               <li
                 key={user._id}
-                className={`p-2 ${index % 2 === 0 ? 'bg-gray-400' : ''}`}
+                className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''}`}
                 onClick={() => setSelectedUserId(user._id)}
               >
                 <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
@@ -194,24 +212,25 @@ const Dashboard: React.FC = () => {
         </ul>
   
         {/* Divider Line with Spacing */}
-        <div className="w-2 border-r border-gray-400 mx-2"></div>
+        <div className="w-2 border-r border-gray-500 mx-2"></div>
   
         {/* Right Side */}
         <ul className="flex-1 border-gray-400 text-right pl-2">
-          {users.length > 0 ? (
-            users.map((user, index) => (
-              <li
-                key={user._id}
-                className={`p-2 ${index % 2 === 0 ? 'bg-gray-400' : ''}`}
-              >
-                <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Address:</strong> {user.address}
-              </li>
-            ))
-          ) : (
-            <p>No users available</p>
-          )}
-        </ul>
-      </div>
+        {selectedUserId ? (
+          users
+            .filter((user) => user._id === selectedUserId)
+            .map((user) =>
+              user.orders.map((order, index) => (
+                <li key={index} className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''}`}>
+                  <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
+                </li>
+              ))
+            )
+        ) : (
+          <p>No user selected</p>
+        )}
+      </ul>
+    </div>
   
       {/* Display selected user ID */}
       {selectedUserId && (
