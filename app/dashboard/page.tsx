@@ -29,12 +29,7 @@ const Dashboard: React.FC = () => {
   const [newOrderContents, setNewOrderContents] = useState('');
   const [newOrderId, setNewOrderId] = useState('');
 
-
-  useEffect(() => {
-    // Simulate user being logged in
-  
-    // Fetch user data from the API
-    const fetchUserData = async () => {
+   const fetchUserData = async () => {
       try {
         const response = await fetch('/api/users', { cache: 'no-store' });
         const responseData = await response.json();
@@ -47,9 +42,10 @@ const Dashboard: React.FC = () => {
         console.error('Error fetching user data:', error);
       }
     };
-  
-    // Fetch user data
+
+  useEffect(() => {
     fetchUserData();
+    // Fetch user data
   }, []);
 
   const handleCreateUser = async () => {
@@ -70,13 +66,14 @@ const Dashboard: React.FC = () => {
         setNewUserName('');
         setNewUserAddress('');
         setNewUserEmail('');
-        setSuccessMessage('User added successfully! Reload to update user list.');
+        setSuccessMessage('User added successfully! Reload to update user list.');    
       } else {
         console.error('Error creating user:', response.status);
       }
     } catch (error) {
       console.error('Error creating user:', error);
     }
+    await fetchUserData();
   };
 
   const handleCreateOrder = async () => {
@@ -110,6 +107,7 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error('Error creating order:', error);
     }
+   await fetchUserData();
   };
 
 
@@ -144,6 +142,7 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error('Error deleting order:', error);
     }
+    await fetchUserData();
   };
 
   const handleDeleteUser = async () => {
@@ -169,12 +168,14 @@ const Dashboard: React.FC = () => {
       if (response.ok) {
         // You may want to update the user's orders in the state if needed
         setSuccessMessage('User deleted successfully!');
+        
       } else {
         console.error('Error deleting user:', response.status);
       }
     } catch (error) {
       console.error('Error deleting user:', error);
     }
+    await fetchUserData();
   };
 
   return (
@@ -207,7 +208,12 @@ const Dashboard: React.FC = () => {
       onClick={() => handleDeleteOrder()}
     >
       Delete Selected Order
-    </button> 
+    </button>
+           {selectedUserId && (
+        <div className="m-2">
+          <p>Selected User ID: {selectedUserId}</p>
+        </div>
+      )}
     {successMessage && <p className="text-green-500 m-2">{successMessage}</p>}
   </div>
 
@@ -272,55 +278,51 @@ const Dashboard: React.FC = () => {
 </div>
 
   
-      <div className="flex items-start">
-        {/* Left Side */}
-        <ul className="flex-1 border-r border-gray-400 pr-2">
-          {users.length > 0 ? (
-            users.map((user, index) => (
-              <li
-                key={user._id}
-                className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''}`}
-                onClick={() => setSelectedUserId(user._id)}
-              >
-                <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
-              </li>
-            ))
-          ) : (
-            <p>No users available</p>
-          )}
-        </ul>
-  
-        {/* Divider Line with Spacing */}
-        <div className="w-2 border-r border-gray-500"></div>
-  
-        {/* Right Side */}
-        <ul className="flex-1 border-gray-400 text-right">
-          {selectedUserId ? (
-            users
-              .filter((user) => user._id === selectedUserId)
-              .map((user) =>
-                user.orders.map((order, index) => (
-                  <li
-                    key={index}
-                    className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''} ${selectedOrder === order ? 'bg-cyan-300' : ''}`}
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
-                  </li>
-                ))
-              )
-          ) : (
-            <p>No user selected</p>
-          )}
-        </ul>
-    </div>
-  
+<div className="flex items-start">
+  {/* Left Side */}
+  <ul className="flex-1 border-r border-gray-400 pr-2">
+    {users.length > 0 ? (
+      users.map((user, index) => (
+        <li
+          key={user._id}
+          className={`p-2 ${selectedUserId === user._id ? 'bg-cyan-6.00' : ''} border-b border-gray-300`}
+          onClick={() => setSelectedUserId(user._id)}
+        >
+          <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
+        </li>
+      ))
+    ) : (
+      <p>No users available</p>
+    )}
+  </ul>
+
+  {/* Divider Line with Spacing */}
+  <div className="w-2 border-r border-gray-500"></div>
+
+  {/* Right Side */}
+  <ul className="flex-1 border-gray-400 text-right">
+    {selectedUserId ? (
+      users
+        .filter((user) => user._id === selectedUserId)
+        .map((user) =>
+          user.orders.map((order, index) => (
+            <li
+              key={index}
+              className={`p-2 ${selectedOrder === order ? 'bg-cyan-600' : ''} border-b border-gray-300`}
+              onClick={() => setSelectedOrder(order)}
+            >
+              <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
+            </li>
+          ))
+        )
+    ) : (
+      <p>No user selected</p>
+    )}
+  </ul>
+</div>
+
       {/* Display selected user ID */}
-      {selectedUserId && (
-        <div className="mt-4">
-          <p>Selected User ID: {selectedUserId}</p>
-        </div>
-      )}
+
     </div>
   );
   

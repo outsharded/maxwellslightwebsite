@@ -9,15 +9,30 @@ export default function Home() {
         <p className="text-sm">Supplying all your needs</p>
       </div>
 
-      <div className="absolute top-0 right-0 mt-4 mr-4">
+      <div className="absolute top-0 right-0 m-4">
+        <Link href="/shop" passHref legacyBehavior>
+          <a className="text-white m-1">Shop</a>
+        </Link>
         <Link href="/login" passHref legacyBehavior>
-          <a className="text-white">Login</a>
+          <a className="text-white m-1">Login</a>
         </Link>
       </div>
 
-      <div className="absolute bottom-0 right-0 text-gray-700 p-4">
-        <p>Built by Pookie</p>
-      </div>
+      {/* Footer with 4 links */}
+      <footer className="absolute bottom-0 right-0 text-gray-700 p-4 flex items-center">
+  <Link href="/about" passHref legacyBehavior>
+    <a className="text-gray-700 hover:text-white mx-2">About</a>
+  </Link>
+  <Link href="/contact" passHref legacyBehavior>
+    <a className="text-gray-700 hover:text-white mx-2">Contact Us</a>
+  </Link>
+  <Link href="/shop" passHref legacyBehavior>
+    <a className="text-gray-700 hover:text-white mx-2">Shop</a>
+  </Link>
+
+  <p className="ml-2">Built by Pookie </p>
+</footer>
+
     </main>
   );
 }
