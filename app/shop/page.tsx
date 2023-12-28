@@ -1,5 +1,6 @@
 // pages/index.tsx
 import React from 'react';
+import Image from 'next/image';
 
 interface Product {
   id: number;
@@ -36,7 +37,7 @@ interface ProductItemProps {
 const ProductItem: React.FC<ProductItemProps> = ({ id, title, price, image }) => {    
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg">
-        <img className="m-2 rounded w-64" src={image} alt={title} />
+        <Image className="m-2 rounded w-64" src={image} alt={title} width={256} height={256}/>
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{title}</div>
         <p className="text-gray-700 text-base">Price: ${price}</p>
