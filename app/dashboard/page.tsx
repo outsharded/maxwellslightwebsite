@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
   const [newUserEmail, setNewUserEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order>();
   const [newOrderAddress, setNewOrderAddress] = useState('');
   const [newOrderContents, setNewOrderContents] = useState('');
   const [newOrderId, setNewOrderId] = useState('');
@@ -110,6 +111,72 @@ const Dashboard: React.FC = () => {
       console.error('Error creating order:', error);
     }
   };
+
+
+  const handleDeleteOrder = async () => {
+    try {
+      // Check if a user is selected
+      if (!selectedUserId) {
+        console.error('No user selected');
+        return;
+      }
+  
+      const body = JSON.stringify({
+        _id: selectedUserId,
+        address: selectedOrder?.address,
+        contents: selectedOrder?.contents,
+      });
+  
+      const response = await fetch(`/api/deleteOrder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+  
+      if (response.ok) {
+        // You may want to update the user's orders in the state if needed
+        setSuccessMessage('Order deleted successfully!');
+      } else {
+        console.error('Error deleting order:', response.status);
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      // Check if a user is selected
+      if (!selectedUserId) {
+        console.error('No user selected');
+        return;
+      }
+  
+      const body = JSON.stringify({
+        _id: selectedUserId,
+      });
+  
+      const response = await fetch(`/api/deleteUser`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+  
+      if (response.ok) {
+        // You may want to update the user's orders in the state if needed
+        setSuccessMessage('User deleted successfully!');
+      } else {
+        console.error('Error deleting user:', response.status);
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
   return (
     <div style={{ background: 'black', color: 'white' }} className="flex flex-col h-screen p-4">
       {/* Create User Form */}
@@ -123,13 +190,25 @@ const Dashboard: React.FC = () => {
       New User
     </button>
 
-      <button
-        className="bg-gray-500 text-white p-2 rounded ml-2"
-        onClick={() => setShowOrderInputs(!showOrderInputs)}
-      >
-        New Order
-      </button>
-    
+    <button
+      className="bg-gray-500 text-white p-2 rounded ml-2"
+      onClick={() => setShowOrderInputs(!showOrderInputs)}
+    >
+      New Order
+    </button>
+    <button
+      className="bg-gray-500 text-white p-2 rounded ml-2"
+      onClick={() => handleDeleteUser()}
+    >
+      Delete Selected User
+    </button> 
+    <button
+      className="bg-gray-500 text-white p-2 rounded ml-2"
+      onClick={() => handleDeleteOrder()}
+    >
+      Delete Selected Order
+    </button> 
+    {successMessage && <p className="text-green-500 m-2">{successMessage}</p>}
   </div>
 
         <div className={`flex flex-col ${showUserInputs ? '' : 'hidden'}`}>
@@ -157,7 +236,7 @@ const Dashboard: React.FC = () => {
           <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateUser}>
             Create User
           </button>
-          {successMessage && <p className="text-green-500 mt-2">{successMessage}</p>}
+         
         </div>
       </div>
   
@@ -212,24 +291,28 @@ const Dashboard: React.FC = () => {
         </ul>
   
         {/* Divider Line with Spacing */}
-        <div className="w-2 border-r border-gray-500 mx-2"></div>
+        <div className="w-2 border-r border-gray-500"></div>
   
         {/* Right Side */}
-        <ul className="flex-1 border-gray-400 text-right pl-2">
-        {selectedUserId ? (
-          users
-            .filter((user) => user._id === selectedUserId)
-            .map((user) =>
-              user.orders.map((order, index) => (
-                <li key={index} className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''}`}>
-                  <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
-                </li>
-              ))
-            )
-        ) : (
-          <p>No user selected</p>
-        )}
-      </ul>
+        <ul className="flex-1 border-gray-400 text-right">
+          {selectedUserId ? (
+            users
+              .filter((user) => user._id === selectedUserId)
+              .map((user) =>
+                user.orders.map((order, index) => (
+                  <li
+                    key={index}
+                    className={`p-2 ${index % 2 === 0 ? 'bg-gray-500' : ''} ${selectedOrder === order ? 'bg-cyan-300' : ''}`}
+                    onClick={() => setSelectedOrder(order)}
+                  >
+                    <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
+                  </li>
+                ))
+              )
+          ) : (
+            <p>No user selected</p>
+          )}
+        </ul>
     </div>
   
       {/* Display selected user ID */}
