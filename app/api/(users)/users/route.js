@@ -13,7 +13,7 @@ export async function GET() {
       "dataSource": "MaxwellSlight",
       "filter": {  "_id": { "$exists": true }}
     }),
-  }, {next: { revalidate: 1 }})
+  }, { cache: 'no-store' })
 
   const product = await res.json()
   return Response.json({ product })

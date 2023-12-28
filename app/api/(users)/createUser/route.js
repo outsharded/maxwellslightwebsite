@@ -2,12 +2,9 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    console.log(body);
     const { name, email, address } = body;
 
     // Log the received data
-    console.log('Received data:', { name, email, address });
-
     const res = await fetch('https://data.mongodb-api.com/app/data-kyrmw/endpoint/data/v1/action/insertOne', {
       method: 'POST',
       headers: {

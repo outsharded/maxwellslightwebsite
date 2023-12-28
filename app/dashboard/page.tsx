@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
     // Fetch user data from the API
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/users');
+        const response = await fetch('/api/users', { cache: 'no-store' });
         const responseData = await response.json();
   
         // Assuming responseData is the entire response
@@ -65,11 +65,11 @@ const Dashboard: React.FC = () => {
 
       if (response.ok) {
         const createdUser: User = await response.json();
-        setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
+        //setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
         setNewUserName('');
         setNewUserAddress('');
         setNewUserEmail('');
-        setSuccessMessage('User added successfully!');
+        setSuccessMessage('User added successfully! Reload to update user list.');
       } else {
         console.error('Error creating user:', response.status);
       }
