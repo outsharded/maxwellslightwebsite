@@ -285,7 +285,7 @@ const Dashboard: React.FC = () => {
       users.map((user, index) => (
         <li
           key={user._id}
-          className={`p-2 ${selectedUserId === user._id ? 'bg-cyan-6.00' : ''} border-b border-gray-300`}
+          className={`p-2 ${selectedUserId === user._id ? 'bg-cyan-600' : ''} border-b border-gray-300`}
           onClick={() => setSelectedUserId(user._id)}
         >
           <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
