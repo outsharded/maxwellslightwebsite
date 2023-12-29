@@ -31,4 +31,17 @@ const About = () => {
   );
 };
 
+
+{/* Footer with 3 links */}
+<footer className="absolute bottom-0 right-0 text-gray-700 p-4 flex items-center">
+<Link href="/about" passHref legacyBehavior>
+  <a className="text-gray-700 hover:text-white mx-2">About</a>
+</Link>
+<Link href="/contact" passHref legacyBehavior>
+  <a className="text-gray-700 hover:text-white mx-2">Contact Us</a>
+</Link>
+<Link href="/shop" passHref legacyBehavior>
+  <a className="text-gray-700 hover:text-white mx-2">Shop</a>
+</Link>
+
 export default About;
