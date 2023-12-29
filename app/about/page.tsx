@@ -9,7 +9,7 @@ const About = () => {
         <div className="mb-6">
           <h2 className="text-2xl font-extrabold mb-2 text-green-500">Our Story</h2>
           <p>We are two teenagers based in London who decided it would be funny to code an unnecessarily complicated website. Our journey began with a shared passion for technology and a desire to make our lives more difficult, with a project that goes beyond the necessary amounts of work.</p>
-          <p>The idea of creating a website that is intentionally difficult to make (for two kids that is) yet not even that funny anymore, quickly became our mission. From intricate coding puzzles to literally wanting to restart the Union of Soviet Socialist Republics, we strive to keep our audience entertained while showcasing Pookie's Coding skills.</p>
+          <p>The idea of creating a website that is intentionally difficult to make (for two kids that is) yet not even that funny anymore, quickly became our mission. From intricate coding puzzles to literally wanting to restart the Union of Soviet Socialist Republics, we strive to keep our audience entertained while showcasing Pookie&apos;s Coding skills.</p>
           <p>Join us on this traumatizing experience, where coding meets yet more coding.</p>
         </div>
 
