@@ -10,7 +10,7 @@ const Login: React.FC = () => {
 
   const handleLogin = () => {
     // Check if username and password are correct
-    if (username === 'user' && password === 'pass') {
+    if (username === process.env.SYSUSER && password === process.env.SYSPASS) {
       // Redirect to a new page (replace '/dashboard' with your desired page)
       window.location.href = '/dashboard';
     } else {
