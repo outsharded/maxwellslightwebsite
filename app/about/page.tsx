@@ -24,7 +24,7 @@ const About = () => {
           <h2 className="text-2xl font-extrabold mb-2 text-blue-500">Behind the Scenes</h2>
           <p>Doing this all for a laugh was how it began, although it has become something more. It means making our lives more exciting and yet also painful from our terrible decisions.</p>
           <p>From spontaneously adding unnecessary features to embracing the consequences of questionable design choices, we navigate the world of coding with a mix of humour and regret.</p>
-          <p>Join us in our pursuit of making our lives even more difficult, though it means making decisions that would make any sane developer cringe. It's all in the spirit of creating something uniquely horrifying</p>
+          <p>Join us in our pursuit of making our lives even more difficult, though it means making decisions that would make any sane developer cringe. It&apos;s all in the spirit of creating something uniquely horrifying</p>
           <p>We hope you enjoy exploring the website as much as we hated creating it. Stay tuned for future updates as we continue to add more layers to this annoying piece of crap. </p>
         </div>
       </div>
