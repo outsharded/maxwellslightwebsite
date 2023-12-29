@@ -1,4 +1,8 @@
+// Assuming you have already imported necessary dependencies and components
+
+import Link from 'next/link';
 import React from 'react';
+
 const About = () => {
   return (
     <div className="bg-black text-white min-h-screen p-8">
@@ -31,5 +35,28 @@ const About = () => {
   );
 };
 
+const YourMainComponent = () => {
+  return (
+    <div>
+      {/* Your existing content */}
+      
+      {/* Include the About component */}
+      <About />
 
-export default About;
+      {/* Footer with 3 links */}
+      <footer className="absolute bottom-0 right-0 text-gray-700 p-4 flex items-center">
+        <Link href="/about" passHref>
+          <a className="text-gray-700 hover:text-white mx-2">About</a>
+        </Link>
+        <Link href="/contact" passHref>
+          <a className="text-gray-700 hover:text-white mx-2">Contact Us</a>
+        </Link>
+        <Link href="/shop" passHref>
+          <a className="text-gray-700 hover:text-white mx-2">Shop</a>
+        </Link>
+      </footer>
+    </div>
+  );
+};
+
+export default YourMainComponent;
