@@ -2,7 +2,7 @@
 import React from 'react';
 
 const Contact: React.FC = () => {
-  const email = 'maxwellslight.co@gmail.com';
+  const email = 'hello@maxwellslight.co.uk';
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
