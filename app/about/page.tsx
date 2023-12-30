@@ -1,5 +1,4 @@
 import React from 'react';
-
 const About = () => {
   return (
     <div className="bg-black text-white min-h-screen p-8">
@@ -31,5 +30,6 @@ const About = () => {
     </div>
   );
 };
+
 
 export default About;

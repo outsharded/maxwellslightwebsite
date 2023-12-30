@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-black text-white">
       <div className="text-center">
-        <h1 className="text-5xl font-bold mb-4">Maxwell Slight & Co</h1>
+        <h1 className="text-5xl font-bold mb-4">Maxwell Slight & Co.</h1>
         <p className="text-sm">Supplying all your needs</p>
       </div>
 
@@ -18,7 +18,7 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Footer with 4 links */}
+      {/* Footer with 3 links */}
       <footer className="absolute bottom-0 right-0 text-gray-700 p-4 flex items-center">
   <Link href="/about" passHref legacyBehavior>
     <a className="text-gray-700 hover:text-white mx-2">About</a>
