@@ -2,6 +2,7 @@
 // pages/login.tsx
 
 import React, { useState } from 'react';
+import { authenticateUser } from './authUtils';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -9,10 +10,14 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
-    // Check if username and password are correct
-    if (username === process.env.SYSUSER && password === process.env.SYSPASS) {
+    // Check if username and password are correct using the authentication function
+    const isAuthenticated = authenticateUser({ username, password });
+
+    if (isAuthenticated) {
+      localStorage.setItem('authenticatedUser', JSON.stringify({ username }));
+
       // Redirect to a new page (replace '/dashboard' with your desired page)
-      window.location.href = '/dashboard';
+      window.location.href = '/sysdashboard';
     } else {
       setError('Invalid username or password');
     }
