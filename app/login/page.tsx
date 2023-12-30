@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     // Check if username and password are correct using the authentication function
     const isAuthenticated = authenticateUser({ username, password });
 
-    if (isAuthenticated) {
+    if (isAuthenticated.stdUser) {
       localStorage.setItem('authenticatedUser', JSON.stringify({ username }));
 
       // Redirect to a new page (replace '/dashboard' with your desired page)
