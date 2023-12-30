@@ -18,7 +18,7 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Footer with 4 links */}
+      {/* Footer with 3 links */}
       <footer className="absolute bottom-0 right-0 text-gray-700 p-4 flex items-center">
   <Link href="/about" passHref legacyBehavior>
     <a className="text-gray-700 hover:text-white mx-2">About</a>

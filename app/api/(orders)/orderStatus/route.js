@@ -2,11 +2,11 @@ export async function POST(req) {
 
     try {
       const body = await req.json();
-      const { address, contents, _id } = body;
+      const { status, _id } = body;
   
       // Log the received data
   
-      const res = await fetch('https://data.mongodb-api.com/app/data-kyrmw/endpoint/data/v1/action/insertOne', {
+      const res = await fetch('https://data.mongodb-api.com/app/data-kyrmw/endpoint/data/v1/action/updateOne', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -17,11 +17,11 @@ export async function POST(req) {
           "collection": "orders",
           "database": "maxwellslight",
           "dataSource": "MaxwellSlight",
-          "document": {
-            "userId": _id,
-            "address": address,
-            "contents": contents,
-            "status": 1
+          "filter": {"_id":{"$oid":`${_id}`}},  
+          "update": {
+            "$set": {
+                "status": status
+            }   
           }
       })
     })

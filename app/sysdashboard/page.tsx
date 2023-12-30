@@ -1,30 +1,36 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-
-interface Order {
-  address: string;
-  contents: string;
-  orderCreated: Date;
-}
+import { useRouter } from 'next/navigation';
 
 interface User {
   _id: string;
   name: string;
   address: string;
   email: string;
-  orders: Order[];
 }
+
+interface Order {
+  _id: string;
+  userId: string;
+  address: string;
+  contents: string;
+  status: number;
+}
+
 // Dashboard component
 const Dashboard: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { push } = useRouter();
   const [showUserInputs, setShowUserInputs] = useState(false);
   const [showOrderInputs, setShowOrderInputs] = useState(false);
   const [users, setUsers] = useState<User[]>([]); // State for user list
+  const [orders, setOrders] = useState<Order[]>([]); // State for user list
   const [newUserName, setNewUserName] = useState('');
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedUserId, setSelectedUserId] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<Order>();
+  const [selectedOrderId, setSelectedOrder] = useState('');
   const [newOrderAddress, setNewOrderAddress] = useState('');
   const [newOrderContents, setNewOrderContents] = useState('');
   const [newOrderId, setNewOrderId] = useState('');
@@ -43,38 +49,34 @@ const Dashboard: React.FC = () => {
       }
     };
 
-  useEffect(() => {
-    fetchUserData();
-    // Fetch user data
-  }, []);
-
-  const handleCreateUser = async () => {
-    try {
-      setShowUserInputs(true); // Show inputs when creating a new user
-      const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail,})
-      const response = await fetch('/api/createUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: body,
-      });
-
-      if (response.ok) {
-        const createdUser: User = await response.json();
-        //setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
-        setNewUserName('');
-        setNewUserAddress('');
-        setNewUserEmail('');
-        setSuccessMessage('User added successfully! Reload to update user list.');    
-      } else {
-        console.error('Error creating user:', response.status);
+    const fetchOrderData = async () => {
+      try {
+        const response = await fetch('/api/getOrders', { cache: 'no-store' });
+        const responseData = await response.json();
+  
+        // Assuming responseData is the entire response
+        const orderData = responseData?.product?.documents || [];
+  
+        setOrders(orderData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
-    } catch (error) {
-      console.error('Error creating user:', error);
-    }
-    await fetchUserData();
-  };
+    };
+
+    useEffect(() => {
+      const authenticatedUser = localStorage.getItem('authenticatedUser');
+  
+      if (authenticatedUser) {
+        // If there is an authenticated user, set the state variable to true
+        setIsLoggedIn(true);
+      } else {
+        // If there is no authenticated user, navigate to the login page
+        push('/login');
+      }
+      fetchUserData()
+      fetchOrderData()
+    }, []);
+  
 
   const handleCreateOrder = async () => {
     try {
@@ -107,22 +109,19 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error('Error creating order:', error);
     }
-   await fetchUserData();
+    await fetchOrderData();
   };
-
 
   const handleDeleteOrder = async () => {
     try {
       // Check if a user is selected
-      if (!selectedUserId) {
-        console.error('No user selected');
+      if (!selectedOrderId) {
+        console.error('No order selected');
         return;
       }
   
       const body = JSON.stringify({
-        _id: selectedUserId,
-        address: selectedOrder?.address,
-        contents: selectedOrder?.contents,
+        _id: selectedOrderId,
       });
   
       const response = await fetch(`/api/deleteOrder`, {
@@ -133,14 +132,74 @@ const Dashboard: React.FC = () => {
         body: body,
       });
   
-      if (response.ok) {
-        // You may want to update the user's orders in the state if needed
-        setSuccessMessage('Order deleted successfully!');
-      } else {
-        console.error('Error deleting order:', response.status);
-      }
+  
     } catch (error) {
       console.error('Error deleting order:', error);
+    }
+    await fetchOrderData();
+  };
+
+  const bumpStatus = async () => {
+    try {
+      if (!selectedOrderId) {
+        console.error('No order selected');
+        return;
+      }
+      const currentStatus = orders.find(order => order._id === selectedOrderId)?.status||1
+      const newStatus = (currentStatus === 4) ? 4 : (currentStatus + 1);
+
+        const body = JSON.stringify({
+          _id: selectedOrderId,
+          status: newStatus
+        });
+      
+
+
+  
+      const response = await fetch(`/api/orderStatus`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+
+      if (response.ok) {
+        // You may want to update the user's orders in the state if needed
+        setSuccessMessage('Status bumped successfully!');
+        await fetchOrderData();
+      } else {
+        console.error('Error bumping order:', response.status);
+      }
+    } catch(error) {
+      console.error('Error bumping order:', error);
+    }
+  }
+
+  const handleCreateUser = async () => {
+    try {
+      setShowUserInputs(true); // Show inputs when creating a new user
+      const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail,})
+      const response = await fetch('/api/createUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      });
+
+      if (response.ok) {
+        const createdUser: User = await response.json();
+        //setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
+        setNewUserName('');
+        setNewUserAddress('');
+        setNewUserEmail('');
+        setSuccessMessage('User added successfully! Reload to update user list.');    
+      } else {
+        console.error('Error creating user:', response.status);
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
     }
     await fetchUserData();
   };
@@ -209,11 +268,11 @@ const Dashboard: React.FC = () => {
     >
       Delete Selected Order
     </button>
-           {selectedUserId && (
-        <div className="m-2">
-          <p>Selected User ID: {selectedUserId}</p>
-        </div>
-      )}
+          {selectedOrderId && (
+          <button className="bg-gray-500 text-white p-2 rounded ml-2" onClick={bumpStatus}>
+          Bump Status
+        </button>
+        )}
     {successMessage && <p className="text-green-500 m-2">{successMessage}</p>}
   </div>
 
@@ -242,7 +301,7 @@ const Dashboard: React.FC = () => {
           <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateUser}>
             Create User
           </button>
-         
+
         </div>
       </div>
   
@@ -281,6 +340,11 @@ const Dashboard: React.FC = () => {
 <div className="flex items-start">
   {/* Left Side */}
   <ul className="flex-1 border-r border-gray-400 pr-2">
+  {selectedUserId && (
+        <div className="m-2">
+          <p>Selected User ID: {selectedUserId}</p>
+        </div>
+      )}
     {users.length > 0 ? (
       users.map((user, index) => (
         <li
@@ -288,7 +352,7 @@ const Dashboard: React.FC = () => {
           className={`p-2 ${selectedUserId === user._id ? 'bg-cyan-600' : ''} border-b border-gray-300`}
           onClick={() => setSelectedUserId(user._id)}
         >
-          <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email} | <strong>Orders:</strong> {user.orders.length}
+          <strong>Name:</strong> {user.name} | <strong>Email:</strong> {user.email}
         </li>
       ))
     ) : (
@@ -301,22 +365,26 @@ const Dashboard: React.FC = () => {
 
   {/* Right Side */}
   <ul className="flex-1 border-gray-400 text-right">
-    {selectedUserId ? (
-      users
-        .filter((user) => user._id === selectedUserId)
-        .map((user) =>
-          user.orders.map((order, index) => (
+  {selectedOrderId && (
+        <div className="m-2">
+          <p>Selected Order ID: {selectedOrderId}</p>
+        </div>
+      )}
+    {orders.length > 0 ? (
+      orders
+        .map((order) =>
+          orders.map((order, index) => (
             <li
               key={index}
-              className={`p-2 ${selectedOrder === order ? 'bg-cyan-600' : ''} border-b border-gray-300`}
-              onClick={() => setSelectedOrder(order)}
+              className={`p-2 ${selectedOrderId === order._id ? 'bg-cyan-600' : ''} border-b border-gray-300`}
+              onClick={() => setSelectedOrder(order._id)}
             >
-              <strong>Order Contents:</strong> {order.contents} | <strong>Order Address:</strong> {order.address}
+              <strong>Contents:</strong> {order.contents} | <strong>Address:</strong> {order.address} | <strong>User:</strong> {users.find(user => user._id === order.userId)?.name || 'Unknown User'} | <strong>Status:</strong> {order.status}
             </li>
           ))
         )
     ) : (
-      <p>No user selected</p>
+      <p>No orders found</p>
     )}
   </ul>
 </div>
