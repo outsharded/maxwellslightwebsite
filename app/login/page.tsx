@@ -14,7 +14,7 @@ const Login: React.FC = () => {
     const isAuthenticated = authenticateUser({ username, password });
 
     if (isAuthenticated) {
-      localStorage.setItem('authenticatedUser', JSON.stringify({ username }));
+      //localStorage.setItem('authenticatedUser', JSON.stringify({ username }));
 
       // Redirect to a new page (replace '/dashboard' with your desired page)
       window.location.href = '/sysdashboard';
@@ -24,8 +24,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black text-white">
-      <div className="text-center">
+    <div className="flex min-h-screen items-center justify-center bg-black text-white">;''
         <h1 className="text-3xl font-bold mb-4">Login Page</h1>
         <div className="mb-4">
           <input
@@ -48,7 +47,6 @@ const Login: React.FC = () => {
         </button>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
-    </div>
   );
 };
 

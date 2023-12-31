@@ -26,6 +26,7 @@ const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); // State for user list
   const [orders, setOrders] = useState<Order[]>([]); // State for user list
   const [newUserName, setNewUserName] = useState('');
+  const [newUserPass, setNewUserPass] = useState('');
   const [newUserAddress, setNewUserAddress] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -64,15 +65,15 @@ const Dashboard: React.FC = () => {
     };
 
     useEffect(() => {
-      const authenticatedUser = localStorage.getItem('authenticatedUser');
+     // const authenticatedUser = localStorage.getItem('authenticatedUser');
   
-      if (authenticatedUser) {
+     // if (authenticatedUser) {
         // If there is an authenticated user, set the state variable to true
-        setIsLoggedIn(true);
-      } else {
+      //  setIsLoggedIn(true);
+     // } else {
         // If there is no authenticated user, navigate to the login page
-        push('/login');
-      }
+       // push('/login');
+      //}
       fetchUserData()
       fetchOrderData()
     }, []);
@@ -179,7 +180,7 @@ const Dashboard: React.FC = () => {
   const handleCreateUser = async () => {
     try {
       setShowUserInputs(true); // Show inputs when creating a new user
-      const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail,})
+      const body = JSON.stringify({"name": newUserName, "address": newUserAddress, "email": newUserEmail, "pass": newUserPass,})
       const response = await fetch('/api/createUser', {
         method: 'POST',
         headers: {
@@ -189,12 +190,18 @@ const Dashboard: React.FC = () => {
       });
 
       if (response.ok) {
-        const createdUser: User = await response.json();
-        //setUsers((prevUsers) => (Array.isArray(prevUsers) ? [...prevUsers, createdUser] : [createdUser]));
+        const mailBody = JSON.stringify({"name": newUserName, "email": newUserEmail, "subject": "Added to our database", "message": "You have been added ",})
+        const responseMail = await fetch('/api/newMail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: mailBody,
+        });
+        setSuccessMessage('User added successfully! Reload to update user list.');   
         setNewUserName('');
         setNewUserAddress('');
-        setNewUserEmail('');
-        setSuccessMessage('User added successfully! Reload to update user list.');    
+        setNewUserEmail('');  
       } else {
         console.error('Error creating user:', response.status);
       }
@@ -202,6 +209,7 @@ const Dashboard: React.FC = () => {
       console.error('Error creating user:', error);
     }
     await fetchUserData();
+    
   };
 
   const handleDeleteUser = async () => {
@@ -296,6 +304,13 @@ const Dashboard: React.FC = () => {
             placeholder="Email"
             value={newUserEmail}
             onChange={(e) => setNewUserEmail(e.target.value)}
+            className="mb-2 p-2 border border-gray-400 rounded text-black"
+          />
+          <input
+            type="text"
+            placeholder="Password"
+            value={newUserPass}
+            onChange={(e) => setNewUserPass(e.target.value)}
             className="mb-2 p-2 border border-gray-400 rounded text-black"
           />
           <button className="bg-gray-500 text-white p-2 rounded" onClick={handleCreateUser}>
