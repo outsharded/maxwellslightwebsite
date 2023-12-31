@@ -2,7 +2,7 @@
  
 import { cookies } from 'next/headers'
 
-export async function GET(request) {
+export async function POST(request) {
  const data = await request.json();
  const user = data.username;
  const password = data.password;
@@ -25,7 +25,7 @@ export async function GET(request) {
           "collection": "users",
           "database": "maxwellslight",
           "dataSource": "MaxwellSlight",
-          "filter": {  "user": user}
+          "filter": { "user": user}
         }),
       }, { cache: 'no-store' })
       console.log(res)

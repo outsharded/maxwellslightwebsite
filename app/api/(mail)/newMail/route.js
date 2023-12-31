@@ -13,10 +13,10 @@ try {
 
         const data = await res
         console.log(data)
-        return Response.json(data)
+        return new Response.json(data)
       } catch (error) {
         console.error(error)
-        return Response.json(error)
+        return new Response.json(error)
       }
       
     }
