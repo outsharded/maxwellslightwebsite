@@ -5,9 +5,9 @@ export interface AuthCredentials {
     password: string;
   }
 
-  export const authenticateUser = ({ username, password }: AuthCredentials): boolean => {
+  export const authenticateUser = ({ username, password }: AuthCredentials) => {
     // Replace this with your actual authentication logic
     // For demonstration purposes, we'll use hardcoded credentials
-    return username === process.env.SYSUSER && password === process.env.SYSPASS;
+    return { sys: (username === process.env.SYSUSER && password === process.env.SYSPASS), stdUser: false}
   };
   

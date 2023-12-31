@@ -1,7 +1,6 @@
 export async function POST(req) {
 
     try {
-        console.log("user deletion")
       const body = await req.json();
       const { _id } = body;
   

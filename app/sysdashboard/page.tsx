@@ -355,11 +355,11 @@ const Dashboard: React.FC = () => {
 <div className="flex items-start">
   {/* Left Side */}
   <ul className="flex-1 border-r border-gray-400 pr-2">
-  {selectedUserId && (
+ {/* {selectedUserId && (*/}
         <div className="m-2">
           <p>Selected User ID: {selectedUserId}</p>
         </div>
-      )}
+     {/* )}*/}
     {users.length > 0 ? (
       users.map((user, index) => (
         <li
@@ -380,11 +380,11 @@ const Dashboard: React.FC = () => {
 
   {/* Right Side */}
   <ul className="flex-1 border-gray-400 text-right">
-  {selectedOrderId && (
+ {/* {selectedOrderId && (*/}
         <div className="m-2">
           <p>Selected Order ID: {selectedOrderId}</p>
         </div>
-      )}
+    {/*  )} */}
     {orders.length > 0 ? (
       orders
         .map((order) =>
